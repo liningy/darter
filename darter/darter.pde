@@ -16,8 +16,8 @@ int oldbrightestX = 0; // X-coordinate of the brightest video pixel
 
 boolean isHit=false;
 
-ArrayListX xpositions;
-ArrayListY ypositions;
+//ArrayList xpositions;
+//ArrayList ypositions;
 
     
 void setup() {
@@ -26,12 +26,12 @@ void setup() {
   video = new Capture(this, width, height, 30);
   noStroke();
   smooth();
-  for(int i=0;i<width;i++){
-    xpositions.add(i);
-  }
-  for(int j=0;j<height;j++){
-    yposition.add(j);
-  }
+//  for(int i=0;i<width;i++){
+//    xpositions.add(i);
+//  }
+//  for(int j=0;j<height;j++){
+//    ypositions.add(j);
+//  }
 }
 
 void draw() {      
