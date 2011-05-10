@@ -16,13 +16,16 @@ int oldbrightestX = 0; // X-coordinate of the brightest video pixel
 
 boolean isHit=false;
 
+//spot is a vector, which instored current detected brightest spot
 PVector spot=new PVector(0,0);
+//spots is a vital ArrayList, whth all brightest spots stored one after another
 ArrayList spots=new ArrayList();
 
 PImage imagewithSpots;
 
     
 void setup() {
+  //background(51);
   size(640, 480); // Change size to 320 x 240 if too slow at 640 x 480
   // Uses the default video input, see the reference if this causes an error
   video = new Capture(this, width, height, 30);
@@ -40,34 +43,38 @@ void draw() {
   if (video.available()) {
     oldbrightestX = brightestX;
     video.read();
-    //image(video, 0, 0, width, height); // Draw the webcam video onto the screen
     float brightestValue = 0;
     video.loadPixels();
     imagewithSpots.loadPixels();
-
     imagewithSpots.copy(video,0,0,video.width,video.height,0,0,video.width,video.height);
     imagewithSpots.updatePixels();
 
+    //get brightest spots and cover them with black squares
     for(int i=0;i<spots.size()-1;i++){
       PVector temp=(PVector)spots.get(i);    
       int y=(int)temp.y;
       int x=(int)temp.x;
       
-      for(int m=x-40;m<x+40;m++){
-        for(int n=y-40;n<y+40;n++){
+      for(int m=constrain(x-40,0,x-40);m<constrain(x+40,x+40,width);m++){
+        for(int n=constrain(y-40,0,y-40);n<constrain(y+40,y+40,height);n++){
           color black = color(0);
           imagewithSpots.pixels[n*width+m]=black;
         }
-      }
+      }      
     }
 
     imagewithSpots.updatePixels();
-    image(imagewithSpots,0,0);
-
     
+    background(51); //background is here to prevent screen refreshing effect
+    //image(imagewithSpots,0,0);  //draw the black squared overlayed image on the screen
+    
+
+
     //image(video, 0, 0, width, height); // Draw the webcam video onto the screen
 
     int index = 0;
+    //we are finding brightest spot from black square overlayed image, not directly from the video. Hence, the former brightest spot will be hided 
+    //to prevent the same spot being detected twice
     if(isHit){
       for (int y = 0; y < video.height; y++) {
         for (int x = 0; x < video.width; x++) {
@@ -91,12 +98,24 @@ void draw() {
       
       spot.x=brightestX;
       spot.y=brightestY;
-      spots.add(spot);
+      
+      //spots.add(spot);
+      PVector temp=new PVector(brightestX, brightestY);
+      spots.add(temp);
+      
 
     }
 
     fill(123,210,20);
-    ellipse(brightestX, brightestY,20,20);
+    //ellipse(brightestX, brightestY,20,20);
+    
+    //this is the draw Function, draw effects on the screen
+    for(int i=0;i<spots.size()-1;i++){
+      PVector temp=(PVector)spots.get(i);    
+      int y=(int)temp.y;
+      int x=(int)temp.x;
+      ellipse(x,y,20,20);      
+    }
   }
 }
 
