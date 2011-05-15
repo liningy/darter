@@ -5,6 +5,8 @@ int brightestX = 0; // X-coordinate of the brightest video pixel
 int brightestY = 0; // Y-coordinate of the brightest video pixel
 int oldbrightestX = 0; // X-coordinate of the brightest video pixel
 //int oldbrightestY = 0; // Y-coordinate of the brightest video pixel
+int updiff=155;
+int btmdiff=150;
 
 boolean isHit=false;
 
@@ -18,14 +20,15 @@ PImage imagewithSpots;
 void setup() {
   //background(51);
   
-  size(640, 480); // Change size to 320 x 240 if too slow at 640 x 480
+  size(1600,1200-200);
+  //size(640, 480); // Change size to 320 x 240 if too slow at 640 x 480
   // Uses the default video input, see the reference if this causes an error
-  video = new Capture(this, width, height, 30);
+  video = new Capture(this, 640, 480, 30);
   noStroke();
   smooth();
   
   spots.add(spot);
-  imagewithSpots=createImage(width,height,RGB);
+  imagewithSpots=createImage(video.width,video.height,RGB);
   
   //different application
 }
@@ -48,10 +51,10 @@ void draw() {
       int y=(int)temp.y;
       int x=(int)temp.x;
       
-      for(int m=constrain(x-40,0,x-40);m<constrain(x+40,x+40,width);m++){
-        for(int n=constrain(y-40,0,y-40);n<constrain(y+40,y+40,height);n++){
+      for(int m=constrain(x-40,0,x-40);m<constrain(x+40,x+40,video.width);m++){
+        for(int n=constrain(y-40,0,y-40);n<constrain(y+40,y+40,video.height);n++){
           color black = color(0);
-          imagewithSpots.pixels[n*width+m]=black;
+          imagewithSpots.pixels[n*video.width+m]=black;
         }
       }      
     }
@@ -67,6 +70,7 @@ void draw() {
     //to prevent the same spot being detected twice
     if(isHit){
       for (int y = 0; y < video.height; y++) {
+        println(y);
         for (int x = 0; x < video.width; x++) {
           // Get the color stored in the pixel
           int pixelValue = imagewithSpots.pixels[index];
@@ -98,8 +102,8 @@ void draw() {
     //this is the draw Function, draw effects on the screen
     for(int i=0;i<spots.size()-1;i++){
       PVector temp=(PVector)spots.get(i);    
-      int y=(int)temp.y;
-      int x=(int)temp.x;
+      int y=(int)temp.y*height/video.height;
+      int x=(int)temp.x*width/video.width;
       ellipse(x,y,20,20);  
     }
   }
