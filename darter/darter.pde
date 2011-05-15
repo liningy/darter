@@ -1,11 +1,3 @@
-/**
- * Brightness Tracking 
- * by Golan Levin. 
- * 
- * Tracks the brightest pixel in a live video signal. 
- */
-
-
 import processing.video.*;
 
 Capture video;
@@ -16,16 +8,16 @@ int oldbrightestX = 0; // X-coordinate of the brightest video pixel
 
 boolean isHit=false;
 
-//spot is a vector, which instored current detected brightest spot
-PVector spot=new PVector(0,0);
-//spots is a vital ArrayList, whth all brightest spots stored one after another
-ArrayList spots=new ArrayList();
-
+PVector spot=new PVector(0,0);   //spot is a vector, which instored current detected brightest spot
+ArrayList spots=new ArrayList(); //spots is a vital ArrayList, whth all brightest spots stored one after another
 PImage imagewithSpots;
+
+//different applications
 
     
 void setup() {
   //background(51);
+  
   size(640, 480); // Change size to 320 x 240 if too slow at 640 x 480
   // Uses the default video input, see the reference if this causes an error
   video = new Capture(this, width, height, 30);
@@ -35,6 +27,7 @@ void setup() {
   spots.add(spot);
   imagewithSpots=createImage(width,height,RGB);
   
+  //different application
 }
 
 void draw() {      
@@ -66,10 +59,7 @@ void draw() {
     imagewithSpots.updatePixels();
     
     background(51); //background is here to prevent screen refreshing effect
-    //image(imagewithSpots,0,0);  //draw the black squared overlayed image on the screen
-    
-
-
+    image(imagewithSpots,0,0);  //draw the black squared overlayed image on the screen
     //image(video, 0, 0, width, height); // Draw the webcam video onto the screen
 
     int index = 0;
@@ -89,9 +79,7 @@ void draw() {
             brightestY = y;
             brightestX = x;
           }
-          index++;
-          
-          
+          index++; 
         }
       }
       isHit=false;
@@ -102,8 +90,6 @@ void draw() {
       //spots.add(spot);
       PVector temp=new PVector(brightestX, brightestY);
       spots.add(temp);
-      
-
     }
 
     fill(123,210,20);
@@ -114,12 +100,14 @@ void draw() {
       PVector temp=(PVector)spots.get(i);    
       int y=(int)temp.y;
       int x=(int)temp.x;
-      ellipse(x,y,20,20);      
+      ellipse(x,y,20,20);  
     }
   }
+  
+  //application
+
 }
 
 void keyPressed(){
-   isHit=true;
-  
+   isHit=true;  
 }
