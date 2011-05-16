@@ -5,8 +5,7 @@ int brightestX = 0; // X-coordinate of the brightest video pixel
 int brightestY = 0; // Y-coordinate of the brightest video pixel
 int oldbrightestX = 0; // X-coordinate of the brightest video pixel
 //int oldbrightestY = 0; // Y-coordinate of the brightest video pixel
-int updiff=155;
-int btmdiff=150;
+
 
 boolean isHit=false;
 
@@ -15,27 +14,30 @@ ArrayList spots=new ArrayList(); //spots is a vital ArrayList, whth all brightes
 PImage imagewithSpots;
 
 //different applications
-
+boolean application_1=true;
+int choice=0;
+Movie waterSpring;
     
 void setup() {
-  //background(51);
+  background(255);
   
   size(1600,1200-200);
   //size(640, 480); // Change size to 320 x 240 if too slow at 640 x 480
   // Uses the default video input, see the reference if this causes an error
   video = new Capture(this, 640, 480, 30);
   noStroke();
+  //noLoop();
   smooth();
   
   spots.add(spot);
   imagewithSpots=createImage(video.width,video.height,RGB);
   
   //different application
+  //1
+  waterSpring=new Movie(this, "waterspring.wav");
 }
 
-void draw() {      
-  //background(51);
-  
+void draw() {        
   if (video.available()) {
     oldbrightestX = brightestX;
     video.read();
@@ -61,16 +63,17 @@ void draw() {
 
     imagewithSpots.updatePixels();
     
-    background(51); //background is here to prevent screen refreshing effect
-    image(imagewithSpots,0,0);  //draw the black squared overlayed image on the screen
+    //background(51); //background is here to prevent screen refreshing effect
+    //image(imagewithSpots,0,0);  //draw the black squared overlayed image on the screen
     //image(video, 0, 0, width, height); // Draw the webcam video onto the screen
 
     int index = 0;
     //we are finding brightest spot from black square overlayed image, not directly from the video. Hence, the former brightest spot will be hided 
     //to prevent the same spot being detected twice
     if(isHit){
+      choice=(int)random(0,2);
+      println(choice);
       for (int y = 0; y < video.height; y++) {
-        println(y);
         for (int x = 0; x < video.width; x++) {
           // Get the color stored in the pixel
           int pixelValue = imagewithSpots.pixels[index];
@@ -94,24 +97,61 @@ void draw() {
       //spots.add(spot);
       PVector temp=new PVector(brightestX, brightestY);
       spots.add(temp);
+      
+      if(application_1){
+        waterSpring.stop();
+        waterSpring.play();
+      }
     }
 
-    fill(123,210,20);
+    //fill(123,210,20);
     //ellipse(brightestX, brightestY,20,20);
     
-    //this is the draw Function, draw effects on the screen
-    for(int i=0;i<spots.size()-1;i++){
-      PVector temp=(PVector)spots.get(i);    
-      int y=(int)temp.y*height/video.height;
-      int x=(int)temp.x*width/video.width;
-      ellipse(x,y,20,20);  
-    }
+    //this is the draw Function, draw effects on the screen 
+//    for(int i=0;i<spots.size()-1;i++){
+//      PVector temp=(PVector)spots.get(i);    
+//      int y=(int)temp.y*height/video.height;
+//      int x=(int)temp.x*width/video.width;
+//      if(choice==0) drawCirle_1(x,y);
+//      else          drawCirle_2(x,y);
+//    }
   }
   
-  //application
-
+  
+  
+  //application 1: draw water spring bubbles
+  int y=(int)spot.y*height/video.height;
+  int x=(int)spot.x*width/video.width;
+  if(x!=0){
+    if(choice==0) {
+      drawCirle_1(x,y);
+    }
+    else{
+      drawCirle_2(x,y);
+    }
+  }  
 }
 
 void keyPressed(){
    isHit=true;  
+}
+
+
+//application 1: draw water spring bubbles
+void drawCirle_1(int x, int y){
+    smooth();
+
+  fill(0);
+  ellipse(x,y, 240,240);
+  fill(255);
+  ellipse(x,y,120,120);
+  fill(0);
+  ellipse(x,y,60,60);
+}
+
+void drawCirle_2(int x, int y){
+  fill(0);
+  ellipse(x,y,120,120);
+  fill(255);
+  ellipse(x,y,60,60);
 }
