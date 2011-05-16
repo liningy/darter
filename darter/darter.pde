@@ -1,4 +1,8 @@
 import processing.video.*;
+import processing.serial.*;
+
+Serial myPort;  // Create object from Serial class
+int val;      // Data received from the serial port
 
 Capture video;
 int brightestX = 0; // X-coordinate of the brightest video pixel
@@ -32,12 +36,27 @@ void setup() {
   spots.add(spot);
   imagewithSpots=createImage(video.width,video.height,RGB);
   
+  //Serial Read
+  String portName = Serial.list()[0];
+  myPort = new Serial(this, portName, 9600);
+  
   //different application
   //1
   waterSpring=new Movie(this, "waterspring.wav");
+   println(Serial.list());
 }
 
-void draw() {        
+void draw() { 
+
+  if ( myPort.available() > 0) {  // If data is available,
+    val = myPort.read();         // read it and store it in val
+    println(val);
+  }
+  
+  if(val==1){
+     isHit=true;  
+     val=0;
+  }  
   if (video.available()) {
     oldbrightestX = brightestX;
     video.read();
@@ -53,8 +72,8 @@ void draw() {
       int y=(int)temp.y;
       int x=(int)temp.x;
       
-      for(int m=constrain(x-40,0,x-40);m<constrain(x+40,x+40,video.width);m++){
-        for(int n=constrain(y-40,0,y-40);n<constrain(y+40,y+40,video.height);n++){
+      for(int m=constrain(x-20,0,x-20);m<constrain(x+20,x+20,video.width);m++){
+        for(int n=constrain(y-20,0,y-20);n<constrain(y+20,y+20,video.height);n++){
           color black = color(0);
           imagewithSpots.pixels[n*video.width+m]=black;
         }
@@ -63,8 +82,8 @@ void draw() {
 
     imagewithSpots.updatePixels();
     
-    //background(51); //background is here to prevent screen refreshing effect
-    //image(imagewithSpots,0,0);  //draw the black squared overlayed image on the screen
+    background(255); //background is here to prevent screen refreshing effect
+    image(imagewithSpots,0,0);  //draw the black squared overlayed image on the screen
     //image(video, 0, 0, width, height); // Draw the webcam video onto the screen
 
     int index = 0;
@@ -72,7 +91,7 @@ void draw() {
     //to prevent the same spot being detected twice
     if(isHit){
       choice=(int)random(0,2);
-      println(choice);
+      //println(choice);
       for (int y = 0; y < video.height; y++) {
         for (int x = 0; x < video.width; x++) {
           // Get the color stored in the pixel
@@ -124,10 +143,10 @@ void draw() {
   int x=(int)spot.x*width/video.width;
   if(x!=0){
     if(choice==0) {
-      drawCirle_1(x,y);
+      //drawCirle_1(x,y);
     }
     else{
-      drawCirle_2(x,y);
+      //drawCirle_2(x,y);
     }
   }  
 }
