@@ -16,6 +16,7 @@ boolean isHit=false;
 PVector spot=new PVector(0,0);   //spot is a vector, which instored current detected brightest spot
 ArrayList spots=new ArrayList(); //spots is a vital ArrayList, whth all brightest spots stored one after another
 PImage imagewithSpots;
+PImage imageforCompare;
 
 //different applications
 boolean application_1=true;
@@ -29,12 +30,14 @@ void setup() {
   //size(640, 480); // Change size to 320 x 240 if too slow at 640 x 480
   // Uses the default video input, see the reference if this causes an error
   video = new Capture(this, 640, 480, 30);
+  video.settings();
   noStroke();
   //noLoop();
   smooth();
   
   spots.add(spot);
   imagewithSpots=createImage(video.width,video.height,RGB);
+  imageforCompare=createImage(video.width-280,video.height-300,RGB);
   
   //Serial Read
   String portName = Serial.list()[0];
@@ -63,39 +66,60 @@ void draw() {
     float brightestValue = 0;
     video.loadPixels();
     imagewithSpots.loadPixels();
+    imageforCompare.loadPixels();
     imagewithSpots.copy(video,0,0,video.width,video.height,0,0,video.width,video.height);
     imagewithSpots.updatePixels();
 
     //get brightest spots and cover them with black squares
+//    for(int i=0;i<spots.size()-1;i++){
+//      PVector temp=(PVector)spots.get(i);    
+//      int y=(int)temp.y;
+//      int x=(int)temp.x;
+//      
+//      for(int m=constrain(x-20,0,x-20);m<constrain(x+20,x+20,video.width);m++){
+//        for(int n=constrain(y-20,0,y-20);n<constrain(y+20,y+20,video.height);n++){
+//          color black = color(0);
+//          imagewithSpots.pixels[n*video.width+m]=black;
+//        }
+//      }      
+//    }
+
+    imagewithSpots.updatePixels();
+    
+    //background(0); //background is here to prevent screen refreshing effect
+    //image(imagewithSpots,0,0);  //draw the black squared overlayed image on the screen
+    //image(video, 0, 0, width, height); // Draw the webcam video onto the screen
+
+    imageforCompare.copy(imagewithSpots,120,255,imagewithSpots.width-280,imagewithSpots.height-300,0,0,imageforCompare.width,imageforCompare.height);
+    imageforCompare.updatePixels();
+    
     for(int i=0;i<spots.size()-1;i++){
       PVector temp=(PVector)spots.get(i);    
       int y=(int)temp.y;
       int x=(int)temp.x;
       
-      for(int m=constrain(x-20,0,x-20);m<constrain(x+20,x+20,video.width);m++){
-        for(int n=constrain(y-20,0,y-20);n<constrain(y+20,y+20,video.height);n++){
+      for(int m=constrain(x-20,0,x-20);m<constrain(x+20,x+20,imageforCompare.width);m++){
+        for(int n=constrain(y-20,0,y-20);n<constrain(y+20,y+20,imageforCompare.height);n++){
           color black = color(0);
-          imagewithSpots.pixels[n*video.width+m]=black;
+          imageforCompare.pixels[n*imageforCompare.width+m]=black;
         }
       }      
     }
+    imageforCompare.updatePixels();
+    //background(0);
+    //image(imageforCompare,120,255);
 
-    imagewithSpots.updatePixels();
     
-    background(255); //background is here to prevent screen refreshing effect
-    image(imagewithSpots,0,0);  //draw the black squared overlayed image on the screen
-    //image(video, 0, 0, width, height); // Draw the webcam video onto the screen
-
     int index = 0;
     //we are finding brightest spot from black square overlayed image, not directly from the video. Hence, the former brightest spot will be hided 
     //to prevent the same spot being detected twice
     if(isHit){
       choice=(int)random(0,2);
       //println(choice);
-      for (int y = 0; y < video.height; y++) {
-        for (int x = 0; x < video.width; x++) {
+      for (int y = 0; y < imageforCompare.height; y++) {
+        for (int x = 0; x < imageforCompare.width; x++) {
           // Get the color stored in the pixel
-          int pixelValue = imagewithSpots.pixels[index];
+           int pixelValue = imageforCompare.pixels[index];
           // Determine the brightness of the pixel
           float pixelBrightness = brightness(pixelValue);
           // If that value is brighter than any previous, then store the
@@ -139,14 +163,14 @@ void draw() {
   
   
   //application 1: draw water spring bubbles
-  int y=(int)spot.y*height/video.height;
-  int x=(int)spot.x*width/video.width;
+  int y=((int)spot.y+255)*height/video.height;
+  int x=((int)spot.x+120)*width/video.width;
   if(x!=0){
     if(choice==0) {
-      //drawCirle_1(x,y);
+      drawCirle_1(x,y);
     }
     else{
-      //drawCirle_2(x,y);
+      drawCirle_2(x,y);
     }
   }  
 }
@@ -160,17 +184,17 @@ void keyPressed(){
 void drawCirle_1(int x, int y){
     smooth();
 
-  fill(0);
-  ellipse(x,y, 240,240);
+  fill(246,255,0);
+  ellipse(x,y, 180,180);
   fill(255);
-  ellipse(x,y,120,120);
-  fill(0);
-  ellipse(x,y,60,60);
+  ellipse(x,y,90,90);
+  fill(246,255,0);
+  ellipse(x,y,45,45);
 }
 
 void drawCirle_2(int x, int y){
-  fill(0);
-  ellipse(x,y,120,120);
+  fill(246,255,0);
+  ellipse(x,y,100,100);
   fill(255);
-  ellipse(x,y,60,60);
+  ellipse(x,y,50,50);
 }
